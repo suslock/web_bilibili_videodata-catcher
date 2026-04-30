@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B站视频数据爬取</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 B站视频数据爬取工具</h1>
+            <p class="subtitle">专业、高效、稳定的数据采集方案</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧配置区 -->
+            <div class="config-panel">
+                <h2>📋 采集配置</h2>
+
+                <div class="form-group">
+                    <label for="keyword">搜索关键词 <span class="required">*</span></label>
+                    <input type="text" id="keyword" placeholder="例如：开箱，单机游戏，vlog等" required>
+                    <small class="hint">请输入您要爬取的视频内容关键词</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxPages">爬取页数 <span class="required">*</span></label>
+                    <input type="number" id="maxPages" min="1" max="50" value="10" required>
+                    <small class="hint">建议5-20页，过多可能触发风控</small>
+                </div>
+
+                <div class="form-group">
+                    <label>时间范围 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="dateRange" value="0" checked>
+                             <span>全部时间</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="dateRange" value="1" checked>
+                            <span>最近1天</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="dateRange" value="7">
+                            <span>最近7天</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>排序方式 <span class="required">*</span></label>
+                    <select id="sortType" required>
+                        <option value="totalrank" selected>综合排序（无）</option>
+                        <option value="click">最多播放</option>
+                        <option value="pubdate">最新发布</option>
+                        <option value="dm">最多弹幕</option>
+                        <option value="stow">最多收藏</option>
+                    </select>
+                </div>
+
+                <button id="startBtn" class="start-btn" disabled>
+                    🚀 开始爬取
+                </button>
+
+                <!-- 进度条 -->
+                <div id="progressSection" class="progress-section" style="display: none;">
+                    <div class="progress-header">
+                        <span id="progressText">准备中...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-detail">
+                        当前页: <span id="currentPage">0</span> / <span id="totalPages">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧结果区 -->
+            <div class="result-panel">
+                <h2>📊 采集结果</h2>
+
+                <!-- 消息框 -->
+                <div id="messageBox" class="message-box" style="display: none;">
+                    <div class="message-content" id="messageContent"></div>
+                </div>
+
+                <!-- 数据预览 -->
+                <div id="previewSection" class="preview-section" style="display: none;">
+                    <div class="preview-header">
+                        <h3>数据预览（前10条）</h3>
+                        <button id="downloadBtn" class="download-btn" disabled>
+                            📥 下载Excel
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table id="previewTable">
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>UP主</th>
+                                    <th>发布时间</th>
+                                    <th>播放量</th>
+                                    <th>弹幕数</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 空状态 -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>完成左侧配置并点击"开始爬取"后，结果将显示在这里</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
