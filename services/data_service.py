@@ -103,3 +103,20 @@ class DataService:
             logging.debug(f"获取用户 {uid} 粉丝数失败: {e}")
             cache[uid] = "请求失败"
             return "请求失败"
+
+    async def fetch_video_tags(self, bvid: str) -> str:
+        """获取视频标签（逗号分隔）"""
+        try:
+            data = await self.fetch_json(
+                "https://api.bilibili.com/x/tag/archive/tags",
+                {"bvid": bvid},
+                self._build_headers(f"https://www.bilibili.com/video/{bvid}")
+            )
+            if data.get("code") == 0 and isinstance(data.get("data"), list):
+                tags = [item.get("tag_name") for item in data["data"] if item.get("tag_name")]
+                return ", ".join(tags) if tags else "无标签"
+            return "无标签"
+        except Exception as e:
+            if "412" in str(e): raise
+            logging.debug(f"获取视频 {bvid} 标签失败: {e}")
+            return "获取失败"
