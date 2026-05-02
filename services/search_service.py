@@ -99,12 +99,13 @@ class SearchService:
             return None
 
     async def _enrich_video_data(self, base_row: List[str], bvid: str, uid: str) -> Optional[List[str]]:
-        """补充视频数据（带信号量控制）"""
         async with self.semaphore:
             try:
-                video_stats, follower_count = await asyncio.gather(
+                # 并发请求：视频统计、粉丝数、视频标签（共用信号量控制频率）
+                video_stats, follower_count, tags = await asyncio.gather(
                     self.data_service.fetch_video_stats(bvid),
-                    self.data_service.fetch_follower_count(uid, self.follower_cache)
+                    self.data_service.fetch_follower_count(uid, self.follower_cache),
+                    self.data_service.fetch_video_tags(bvid)
                 )
 
                 return [
@@ -121,6 +122,7 @@ class SearchService:
                     str(video_stats["share"]),
                     str(video_stats["reply"]),
                     base_row[-1],  # BV号
+                    tags
                 ]
             except Exception as e:
                 if "412" in str(e):
