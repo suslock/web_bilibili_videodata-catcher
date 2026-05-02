@@ -12,9 +12,9 @@ class Settings:
     REQUEST_DELAY: float = float(os.getenv("BILI_REQUEST_DELAY", "2.0"))
 
     #TODO 🔐 Cookie配置,需注意涉及隐私信息，请勿泄露信息
-    SESSDATA: str = os.getenv("BILI_SESSDATA", "9f6eb7ba%2C1792754296%2Cb9876%2A41CjC3u_dam_vBNAYQG3x7a7evh1inMjbLBUtOa2WOx2hyhUbtK-EB9SlcAMdsrm9WVCwSVnp1MHFTc3d6OE5KVUpzM2ZydHo1YkgzcURZVzd4elV1UjVnb19ZeXRVMXNGYy05TjRRenhjUkwzMDBMdWhaS2tZMFRJNEhGSVhRMzNSX003X25IeENBIIEC")
-    BILI_JCT: str = os.getenv("BILI_BILI_JCT", "6fdbff4b2dfde4bee319ec74ca831383")
-    BUVID3: str = os.getenv("BILI_BUVID3", "7E792CA1-A32A-57DA-764D-A3B6D63A51A866151infoc")
+    SESSDATA: str = os.getenv("BILI_SESSDATA", "")
+    BILI_JCT: str = os.getenv("BILI_BILI_JCT", "")
+    BUVID3: str = os.getenv("BILI_BUVID3", "")
     DEDE_USERID: str = os.getenv("BILI_DEDE_USERID", "")
 
     # 🌐 网络配置
