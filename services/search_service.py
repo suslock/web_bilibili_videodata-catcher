@@ -98,36 +98,32 @@ class SearchService:
             logging.error(f"抓取第 {page} 页失败: {e}")
             return None
 
+    # search_service.py -> _enrich_video_data 方法
     async def _enrich_video_data(self, base_row: List[str], bvid: str, uid: str) -> Optional[List[str]]:
         async with self.semaphore:
             try:
-                # 并发请求：视频统计、粉丝数、视频标签（共用信号量控制频率）
-                video_stats, follower_count, tags = await asyncio.gather(
+                # ✅ 视频统计 + 粉丝数 并发（风控宽松）
+                video_stats, follower_count = await asyncio.gather(
                     self.data_service.fetch_video_stats(bvid),
-                    self.data_service.fetch_follower_count(uid, self.follower_cache),
-                    self.data_service.fetch_video_tags(bvid)
+                    self.data_service.fetch_follower_count(uid, self.follower_cache)
                 )
 
+                # ✅ 标签接口 单独串行 + 额外延迟（风控严格）
+                await asyncio.sleep(0.5)  # 🔥 关键：页内请求间隔
+                tags = await self.data_service.fetch_video_tags(bvid)
+
                 return [
-                    base_row[0],  # 标题
-                    base_row[1],  # UP主
-                    base_row[2],  # UID
-                    str(follower_count),  # 粉丝数
-                    base_row[4],  # 发布时间
-                    str(video_stats["view"]),
-                    str(video_stats["danmaku"]),
-                    str(video_stats["like"]),
-                    str(video_stats["coin"]),
-                    str(video_stats["favorite"]),
-                    str(video_stats["share"]),
-                    str(video_stats["reply"]),
-                    base_row[-1],  # BV号
-                    tags
+                    base_row[0], base_row[1], base_row[2],
+                    str(follower_count), base_row[4],
+                    str(video_stats["view"]), str(video_stats["danmaku"]),
+                    str(video_stats["like"]), str(video_stats["coin"]),
+                    str(video_stats["favorite"]), str(video_stats["share"]),
+                    str(video_stats["reply"]), base_row[-1], tags
                 ]
             except Exception as e:
                 if "412" in str(e):
                     raise
-                logging.debug(f" enrich {bvid} 失败: {e}")
+                logging.debug(f"enrich {bvid} 失败: {e}")
                 return None
 
     async def search_and_fetch(self, keyword: str, max_pages: int, max_days: int,
